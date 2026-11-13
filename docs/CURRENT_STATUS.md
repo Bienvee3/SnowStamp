@@ -15,7 +15,7 @@ Build order position (see `docs/ARCHITECTURE.md` section 12): step 1 in progress
 - Docs baseline is on GitHub. Work proceeds in `review/phase-N` branches from now on.
 
 ## Documentation present
-`AGENTS.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/adr/001-adopt-layered-ddd-architecture.md` (Accepted), `docs/adr/002-stack-selection.md` (Proposed), `docs/DECISIONS/README.md`, `docs/BRAND.md`.
+`README.md`, `AGENTS.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/adr/001-adopt-layered-ddd-architecture.md` (Accepted), `docs/adr/002-stack-selection.md` (Proposed), `docs/DECISIONS/README.md`, `docs/BRAND.md`, `docs/assets/logo.png`.
 
 ## Decisions
 Full index in `docs/DECISIONS/README.md`.
@@ -36,7 +36,7 @@ Full index in `docs/DECISIONS/README.md`.
 - Waitlist form is live and linked from the profiles.
 
 ## Marketing content
-Marketing material is **not versioned**: it lives outside this repository, in a sibling `marketing/` folder (not public). Nothing under it may be committed here.
+Marketing material is **not versioned**: it lives outside this repository, in a sibling `marketing/` folder (not public). Nothing under it may be committed here. The only exception is the logo (`docs/assets/logo.png`), used by the README.
 - Video 01 v2 (35.9 s, 1080x1920, Spanish voice-over, synthetic music) rebuilt with the official logo palette and a single-axis layout (everything centred on x=540, focal band y 250-1650). Generated reproducibly from `marketing/video-01/` in that folder (`voice.py` -> `build.py`; deps: `edge-tts`, `imageio-ffmpeg`, `numpy`, `pillow`; map data Natural Earth 50m cached in `marketing/.cache/`; logo in `marketing/assets/logo.png`). Percentages in the video are demo values labelled "DATOS DE EJEMPLO"; resort coordinates are approximate. Not yet published; owner review pending (voice quality not auditioned by the agent). `docs/BRAND.md` palette updated to the logo colours.
 
 ## Market research summary (2026-11-13)
