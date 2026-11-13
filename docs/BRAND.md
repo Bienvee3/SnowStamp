@@ -30,7 +30,7 @@ Keep the same handle on every new platform.
   ```
 
 ## Visual identity
-- Logo: rounded-square icon, blue (`#2699DB`) with a white perforated postage stamp holding a snowflake (kept in the unversioned marketing folder outside this repo). Wordmark in Arial Black (video); no wordmark in the icon.
+- Logo: rounded-square icon, blue (`#2699DB`) with a white perforated postage stamp holding a snowflake (`docs/assets/logo.png`). Wordmark in Arial Black (video); no wordmark in the icon.
 - Palette (from the logo): logo blue `#2699DB`, white, deep blue `#0C467A` (text, pins), light blue tints for visited countries, cool grey for unvisited land. Orange `#FF843C` is reserved for a friend's data in comparisons.
 - Map style is the brand: fix background, visited colour, unvisited colour and percentage typography, and reuse them in every piece.
 

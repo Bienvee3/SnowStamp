@@ -66,7 +66,7 @@ All repository content (code, comments, docs, commits) in English. Chat with the
 ## Data and privacy
 - Planned resort source: OpenSkiMap / OpenStreetMap (ODbL). Visible attribution is mandatory. Verify coverage and data quality first; define what counts as a "resort" before any percentage is computed.
 - Never commit secrets, credentials or personal contact data. The repository is public.
-- Marketing material (videos, generators, social assets, logo files) is never versioned here. It lives in a sibling `marketing/` folder outside the repository.
+- Marketing material (videos, generators, social assets) is never versioned here. It lives in a sibling `marketing/` folder outside the repository. The only brand asset kept in the repo is the logo, `docs/assets/logo.png`, used by `README.md`.
 
 ## Build / test
 None yet. Document the commands here as soon as ADR-002 is Accepted.
