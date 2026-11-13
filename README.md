@@ -9,7 +9,7 @@
   <em>Cada estación es un sello. Tu pasaporte de esquí y snowboard.</em>
 </p>
 
-> **Status: in development. There is no app to download yet.** The project is in its pre-product phase: validating demand with a waitlist and laying the engineering foundations. No code has been written.
+> **Status: in development. There is no app to download yet.** The project is in its pre-product phase: collecting feedback from skiers and snowboarders and laying the engineering foundations. No code has been written.
 
 ## What is SnowStamp?
 
@@ -31,6 +31,18 @@ Run logging is deferred on purpose: apps such as Slopes and Skitude already cove
 ## Why
 
 Skiers already track this by hand, in spreadsheets, hand-made maps and long "resorts skied" forum threads. SnowStamp turns that into a map you can show off, with a number to go with it: "I have visited X% of the resorts in Spain".
+
+## Give feedback
+
+SnowStamp is shaped by the people who will use it. Before building anything, the most useful thing you can do is tell us:
+
+- Which app or spreadsheet you use today to keep track of your resorts, and what you miss in it.
+- Which of the planned features matter most to you, and what is missing.
+- How many resorts you have been to and how you would like to see and share them.
+
+**[Open the feedback form](https://forms.gle/6A3DvtVCoTi1GDPe6)** (Spanish, takes a couple of minutes). Ideas and questions are also welcome in the [issues](../../issues).
+
+*En español: cuéntanos qué app usas hoy, qué echas en falta y qué funciones te interesan más. Tu opinión decide qué construimos.*
 
 ## Project state
 
