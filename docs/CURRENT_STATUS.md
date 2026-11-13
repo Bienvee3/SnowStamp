@@ -8,11 +8,11 @@ Pre-product validation in progress (waitlist and social content) and project fou
 Build order position (see `docs/ARCHITECTURE.md` section 12): step 1 in progress (`AGENTS.md`, status file, architecture and ADRs done; local dev infrastructure blocked on the stack decision).
 
 ## Repository
-- Branch: `main`. Docs-only baseline committed (not pushed). Working tree clean after the baseline.
+- Branch: `main`, tracking `origin/main`. Docs-only baseline pushed on 2026-11-13. Working tree clean.
 - Remote: `origin` -> `https://github.com/Bienvee3/SnowStamp` (renamed from `ski-been`).
 - Open issues: #1 world map with lit-up resorts, #2 visited percentages, #3 friends comparison, #4 run logging (deferred).
 - Tests: none. Build: none.
-- Docs baseline committed on `main`; push pending authorization. After that, work proceeds in `review/phase-N` branches.
+- Docs baseline is on GitHub. Work proceeds in `review/phase-N` branches from now on.
 
 ## Documentation present
 `AGENTS.md`, `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/adr/001-adopt-layered-ddd-architecture.md` (Accepted), `docs/adr/002-stack-selection.md` (Proposed), `docs/DECISIONS/README.md`, `docs/BRAND.md`.
@@ -55,7 +55,7 @@ Waitlist signups after the first week of content: <20 weak; 50-100 justifies an 
 
 ## Next steps
 1. Owner chooses the stack (ADR-002 Option A or B) -> mark ADR Accepted, record versions and commands in `AGENTS.md`.
-2. Authorize the push of the docs baseline, then start `review/phase-1`.
+2. Start `review/phase-1` once the stack is decided.
 3. Build step 1-2: local dev infrastructure, versioned schema and seed.
 4. Domain core with unit tests, starting with the "resort" definition and the visited-percentage service.
 5. In parallel: publish the first 5 short videos, track waitlist signups weekly, ask 10-20 skiers whether they know Skitude/Slopes/EverySki.
