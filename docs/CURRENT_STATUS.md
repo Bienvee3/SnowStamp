@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-11-13
+Last updated: 2026-11-14
 
 ## Phase
 Pre-product validation in progress (waitlist and social content) and project foundations being laid. No code yet.
@@ -37,7 +37,7 @@ Full index in `docs/DECISIONS/README.md`.
 
 ## Marketing content
 Marketing material is **not versioned**: it lives outside this repository, in a sibling `marketing/` folder (not public). Nothing under it may be committed here. The only exception is the logo (`docs/assets/logo.png`), used by the README.
-- Video 01 v2 (35.9 s, 1080x1920, Spanish voice-over, synthetic music) rebuilt with the official logo palette and a single-axis layout (everything centred on x=540, focal band y 250-1650). Generated reproducibly from `marketing/video-01/` in that folder (`voice.py` -> `build.py`; deps: `edge-tts`, `imageio-ffmpeg`, `numpy`, `pillow`; map data Natural Earth 50m cached in `marketing/.cache/`; logo in `marketing/assets/logo.png`). Percentages in the video are demo values labelled "DATOS DE EJEMPLO"; resort coordinates are approximate. Not yet published; owner review pending (voice quality not auditioned by the agent). `docs/BRAND.md` palette updated to the logo colours.
+- Video 01 v6 (31.8 s, 1080x1920, Spanish voice-over, synthetic music), final candidate. Generated reproducibly from `marketing/video-01/` (`voice_external.py <audio>` -> `build.py`; edge-tts path in `voice.py` kept as fallback; deps: `edge-tts`, `faster-whisper`, `imageio-ffmpeg`, `numpy`, `pillow`; map data Natural Earth 50m cached in `marketing/.cache/`). Voice-over is an ElevenLabs file supplied by the owner, aligned to the script with faster-whisper; the reference TikTok voice could not be identified, no third-party voice cloning. Owner-requested changes applied: SFX at 35% gain and whooshes a further -8 dB, hook title raised with the map fully visible, brand caption "SNOWSTAMP:" shown alone before "TU PASAPORTE...", Iberian Peninsula centred. Percentages are demo values labelled "DATOS DE EJEMPLO"; resort coordinates are approximate. Owner approved the cut on 2026-11-14; not yet published. Earlier cuts v1-v5 kept in `marketing/video-01/out/`.
 
 ## Market research summary (2026-11-13)
 - Demand is real but niche: Reddit/forum threads asking for resort trackers, long-running "ski areas skied" threads on SkiTalk and Liftlines, hand-made spreadsheets and maps. Reddit pages could not be read (blocked); signals come from titles and search excerpts only.
