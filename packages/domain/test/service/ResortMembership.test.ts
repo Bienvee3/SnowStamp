@@ -11,7 +11,7 @@ describe("resortsContaining (illustrative polygons near Formigal and Baqueira)",
   });
 
   it("finds a resort through its second polygon", () => {
-    expect(resortsContaining(at(1.0, 42.72), ALL)).toEqual([BAQUEIRA]);
+    expect(resortsContaining(at(1.02, 42.72), ALL)).toEqual([BAQUEIRA]);
   });
 
   it("does not match a base car park outside the skiable domain", () => {

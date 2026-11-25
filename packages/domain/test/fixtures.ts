@@ -19,7 +19,7 @@ export function rectangle(west: number, south: number, east: number, north: numb
 export const FORMIGAL_AREA = ResortArea.of([{ outer: rectangle(-0.42, 42.76, -0.34, 42.8), holes: [] }]);
 export const BAQUEIRA_AREA = ResortArea.of([
   { outer: rectangle(0.9, 42.68, 0.98, 42.72), holes: [] },
-  { outer: rectangle(0.98, 42.7, 1.02, 42.73), holes: [] },
+  { outer: rectangle(1.0, 42.7, 1.04, 42.73), holes: [] },
 ]);
 
 export const FORMIGAL = Resort.create(ResortKey.of("es-formigal"), "Formigal", FORMIGAL_AREA);
