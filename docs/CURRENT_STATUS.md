@@ -3,15 +3,16 @@
 Last updated: 2026-11-25
 
 ## Phase
-Stack accepted (ADR-002). Validation content published on TikTok; project foundations done; scaffolding next. No code yet.
+Stack accepted (ADR-002). Validation content published on TikTok. Phase 1 (`review/phase-1`) built the TypeScript domain and application layers, plus the SQL schema; presentation and Supabase adapters are next.
 
-Build order position (see `docs/ARCHITECTURE.md` section 12): step 1 in progress (`AGENTS.md`, status file, architecture and ADRs done; local dev infrastructure unblocked, not started).
+Build order position (see `docs/ARCHITECTURE.md` section 12): steps 1-3 and 5 largely done on `review/phase-1` (workspace, schema, domain, application services); step 4 (repository implementations) and the UI are pending. Local Supabase (Docker) not yet run.
 
 ## Repository
-- Branch: `main`, tracking `origin/main`. Docs-only baseline pushed on 2026-11-13. Working tree clean.
+- `main` (pushed, docs only) and `review/phase-1` (local, not pushed, not merged): workspace scaffold, domain, application and SQL commits. Awaiting owner review and push authorization.
 - Remote: `origin` -> `https://github.com/Bienvee3/SnowStamp` (renamed from `ski-been`).
 - Open issues: #1 world map with lit-up resorts, #2 visited percentages, #3 friends comparison, #4 run logging (deferred).
-- Tests: none. Build: none.
+- Tests: domain 71, application 15, all passing; coverage 100% lines, ~98% branches in both packages (gate 80%). Build and type-check pass. SQL migrations NOT executed (Docker daemon was off): treat as unverified.
+- Test geometry uses illustrative polygons near Formigal/Baqueira, not real OSM boundaries.
 - Docs baseline is on GitHub. Work proceeds in `review/phase-N` branches from now on.
 
 ## Documentation present
@@ -63,10 +64,11 @@ Waitlist signups after the first week of content: <20 weak; 50-100 justifies an 
 - Store rules checked 2026-11-25 from official pages: Google Play personal developer accounts created after 2023-11-13 need a closed test with >= 12 testers opted in for 14 continuous days before production access (<https://support.google.com/googleplay/android-developer/answer/14151465>); Apple guideline 5.1.1(v) requires in-app account deletion for apps with account creation (<https://developer.apple.com/support/offering-account-deletion-in-your-app>). Privacy policy is required by both stores. Re-verify at release; the waitlist can seed the 12 testers.
 
 ## Next steps
-1. Scaffold the project per ADR-002 on `review/phase-1`; record verified versions and commands in `AGENTS.md`.
-2. Local dev infrastructure (Supabase CLI), versioned schema with PostGIS and seed.
-3. Domain core with unit tests: the resort-membership service on real polygons (Formigal, Baqueira: piste, base car park, access road), then the visited-percentage service.
-4. Resort data pipeline: derive polygons for all countries from OSM, curate, attribute (ODbL).
-5. Public web (Next.js): landing "La cumbre" live with waitlist registration for the launch.
-6. Verify landing region names; keep publishing content and tracking waitlist signups weekly.
+1. Owner reviews `review/phase-1`, authorizes push and merge to `main`.
+2. Start Docker, install the Supabase CLI, run `supabase db reset` and fix the migrations; add an integration profile comparing `ST_Covers` with the TypeScript `ResortArea.contains`.
+3. Infrastructure package: Supabase adapters for `PassportRepository`, `FriendshipRepository`, `ResortCatalog` (+ offline stubs already exist in application tests).
+4. Resort data pipeline: derive skiable-domain polygons for all countries from OSM, curate, load as seed; country/continent seed.
+5. Public web (Next.js): landing "La cumbre" live with waitlist registration; Expo app (map, passport, progress, friends).
+6. Verify landing region names against the all-countries goal.
 7. Official trademark check in TMview (EUIPO) and OEPM, classes 9, 41, 42.
+8. Add in-app account deletion and a privacy policy before store submission; plan the 12-tester closed test for Google Play.

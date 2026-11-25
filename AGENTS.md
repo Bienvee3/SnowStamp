@@ -13,7 +13,7 @@ SnowStamp is an app to record and interactively visualize personal trips to ski 
 ## Stack
 Decided in `docs/adr/002-stack-selection.md` (Accepted 2026-11-25): TypeScript everywhere; Expo (React Native) mobile app with MapLibre; Next.js public web (landing and waitlist); Supabase (PostgreSQL + PostGIS, auth, row-level security) behind domain ports. A resort is a WGS84 MultiPolygon of its skiable domain. Coverage: all countries and all their ski resorts.
 
-No code, build or test tooling exists yet. Record exact versions and commands in this file when the project is scaffolded and verified from a real build.
+Layout (npm workspaces, ES modules): `packages/domain` (pure TypeScript, no I/O), `packages/application` (use cases, DTOs; depends on domain), `supabase/migrations` (versioned SQL). Presentation (Expo app, Next.js web) and the Supabase adapters are not built yet.
 
 ## Scope
 Source of truth for features: GitHub issues.
@@ -71,4 +71,9 @@ All repository content (code, comments, docs, commits) in English. Chat with the
 - Marketing material (videos, generators, social assets) is never versioned here. It lives in a sibling `marketing/` folder outside the repository. The only brand asset kept in the repo is the logo, `docs/assets/logo.png`, used by `README.md`.
 
 ## Build / test
-None yet. Document the commands here once the project is scaffolded (ADR-002 is Accepted).
+Verified on Node 24.21, npm 11.19, TypeScript 7.0.2, Vitest 5.1.2 (+ `@vitest/coverage-v8`), 2026-11-25.
+- Install: `npm install`
+- Build (domain first, then application): `npm run build`
+- Type-check a package: `npm run typecheck --workspaces`
+- Tests with the 80% coverage gate: `npm test` (each package fails below 80% lines, branches, functions, statements)
+- SQL migrations are not executed by any command yet (they need Docker and the Supabase CLI).
