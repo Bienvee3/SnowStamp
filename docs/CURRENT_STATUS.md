@@ -3,16 +3,17 @@
 Last updated: 2026-11-25
 
 ## Phase
-Stack accepted (ADR-002). Validation content published on TikTok. Phase 1 (`review/phase-1`) built the TypeScript domain and application layers, plus the SQL schema; presentation and Supabase adapters are next.
+Stack accepted (ADR-002). Validation content published on TikTok. Phase 1 (`review/phase-1`) built the domain, application, Supabase adapters, SQL schema, OSM extraction pipeline and the public web page; the Expo mobile app and data curation are next.
 
-Build order position (see `docs/ARCHITECTURE.md` section 12): steps 1-3 and 5 largely done on `review/phase-1` (workspace, schema, domain, application services); step 4 (repository implementations) and the UI are pending. Local Supabase (Docker) not yet run.
+Build order position (see `docs/ARCHITECTURE.md` section 12): steps 1-5 and 7 done on `review/phase-1` (workspace, schema, domain, repositories, application services, adapters); steps 6 (auth/API hardening) and 9 (UI: Expo app) are pending.
 
 ## Repository
 - `main` (pushed, docs only) and `review/phase-1` (local, not pushed, not merged): workspace scaffold, domain, application and SQL commits. Awaiting owner review and push authorization.
 - Remote: `origin` -> `https://github.com/Bienvee3/SnowStamp` (renamed from `ski-been`).
 - Open issues: #1 world map with lit-up resorts, #2 visited percentages, #3 friends comparison, #4 run logging (deferred).
-- Tests: domain 71, application 15, all passing; coverage 100% lines, ~98% branches in both packages (gate 80%). Build and type-check pass. SQL migrations NOT executed (Docker daemon was off): treat as unverified.
-- Test geometry uses illustrative polygons near Formigal/Baqueira, not real OSM boundaries.
+- Unit tests: domain 77, application 15, pipeline 19, web 7, all passing; coverage 98-100% lines (gate 80%). Integration tests: 14 against real PostGIS 16 + PostgREST containers, passing. Build and type-check pass.
+- Verified against a real database: migrations, geometry rules (`ST_Covers` agrees with the TypeScript `ResortArea.contains` on a grid including edges and vertices), RLS policies, the Supabase adapters. The integration run found and fixed two real bugs (friendship accept blocked by an upsert insert check; auth stub).
+- Real OSM data loaded cleanly: Spain 32 candidate resorts and Andorra 3 (valid MultiPolygons in PostGIS). Test fixtures still use illustrative polygons near Formigal/Baqueira.
 - Docs baseline is on GitHub. Work proceeds in `review/phase-N` branches from now on.
 
 ## Documentation present
@@ -58,17 +59,18 @@ Waitlist signups after the first week of content: <20 weak; 50-100 justifies an 
 ## Known risks
 - What counts as a "resort" (OSM includes tiny ski areas) defines every percentage; it must be curated and tested before the UI.
 - Some architecture rules are worded for a server-side stack; ADR-002 lists the reinterpretations (no controller layer, RLS authorization, Supabase migrations). Map each rule to code when scaffolding.
-- No official polygon dataset exists for every resort; polygons must be derived from OSM and curated. Covering all countries makes data curation the main cost.
+- No official polygon dataset exists for every resort; polygons are derived from OSM and curated. Covering all countries makes data curation the main cost.
+- Curation findings from the Spain/Andorra run: (a) one resort can be several OSM polygons (San Isidro has three sector polygons, Cebolledo/Requejines/Riopinos/Saliencias); they must be merged or mapped to one resort; (b) a cross-border domain appears in both countries (Pal-Arinsal is in the Spain and Andorra results); (c) some names are generic or a sector; (d) the size threshold (0.3 km2, `MIN_RESORT_AREA_SQUARE_KM`) is provisional: Valle del Sol (0.19), Tavascan (0.12) and Santa Ines (0.05) were excluded; (e) polygons come from `landuse=winter_sports`, which is the mapped resort domain, not strictly pistes and lifts.
 - ST_Contains/ST_DWithin only matter for GPS validation; issues #1-#3 mark visits manually. Decide when GPS check-in enters scope.
 - Name conflict: a web search (2026-11-25) found no "SnowStamp" mark or app, but TMview/OEPM were not queried (not searchable that way). Owner believes there is no conflict; the official check is still open.
 - Store rules checked 2026-11-25 from official pages: Google Play personal developer accounts created after 2023-11-13 need a closed test with >= 12 testers opted in for 14 continuous days before production access (<https://support.google.com/googleplay/android-developer/answer/14151465>); Apple guideline 5.1.1(v) requires in-app account deletion for apps with account creation (<https://developer.apple.com/support/offering-account-deletion-in-your-app>). Privacy policy is required by both stores. Re-verify at release; the waitlist can seed the 12 testers.
 
 ## Next steps
 1. Owner reviews `review/phase-1`, authorizes push and merge to `main`.
-2. Start Docker, install the Supabase CLI, run `supabase db reset` and fix the migrations; add an integration profile comparing `ST_Covers` with the TypeScript `ResortArea.contains`.
-3. Infrastructure package: Supabase adapters for `PassportRepository`, `FriendshipRepository`, `ResortCatalog` (+ offline stubs already exist in application tests).
-4. Resort data pipeline: derive skiable-domain polygons for all countries from OSM, curate, load as seed; country/continent seed.
-5. Public web (Next.js): landing "La cumbre" live with waitlist registration; Expo app (map, passport, progress, friends).
+2. Decide the curation rules (merge sector polygons, cross-border ownership, size threshold) and provide or approve the country/continent seed (ISO list with continents, to verify); then run the pipeline for all countries.
+3. Expo mobile app: map (MapLibre), passport, progress, friends, auth, account deletion; wire the application services to the Supabase adapters.
+4. Production Supabase project: apply migrations, configure auth (needs the owner's account and keys).
+5. Deploy the web (hosting choice and domain are the owner's; nothing paid yet); fill the privacy policy controller and contact.
 6. Verify landing region names against the all-countries goal.
 7. Official trademark check in TMview (EUIPO) and OEPM, classes 9, 41, 42.
 8. Add in-app account deletion and a privacy policy before store submission; plan the 12-tester closed test for Google Play.
