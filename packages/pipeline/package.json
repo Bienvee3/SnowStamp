@@ -1,0 +1,21 @@
+{
+  "name": "@snowstamp/pipeline",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "extract": "tsc -p tsconfig.build.json && node dist/cli.js"
+  },
+  "dependencies": {
+    "@snowstamp/domain": "0.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.10",
+    "@vitest/coverage-v8": "^5.1.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.2"
+  }
+}
