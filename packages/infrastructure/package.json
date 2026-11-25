@@ -1,0 +1,26 @@
+{
+  "name": "@snowstamp/infrastructure",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@snowstamp/domain": "0.0.0",
+    "@supabase/postgrest-js": "^1.19.4"
+  },
+  "devDependencies": {
+    "@snowstamp/application": "^0.0.0",
+    "@types/node": "^26.6.10",
+    "@types/pg": "^8.23.1",
+    "@vitest/coverage-v8": "^5.1.2",
+    "pg": "^8.23.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.2"
+  }
+}

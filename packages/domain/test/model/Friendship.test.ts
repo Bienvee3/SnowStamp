@@ -50,6 +50,14 @@ describe("Friendship", () => {
     expect(() => friendship.accept("leo")).toThrow(InvalidStateTransitionError);
   });
 
+  it("restores any stored state, still rejecting a self friendship", () => {
+    const restored = Friendship.restore("f-9", "ana", "leo", FriendshipState.Accepted);
+    expect(restored.state).toBe(FriendshipState.Accepted);
+    restored.remove("ana");
+    expect(restored.state).toBe(FriendshipState.Removed);
+    expect(() => Friendship.restore("f-9", "ana", "ana", FriendshipState.Accepted)).toThrow(InvalidFriendshipError);
+  });
+
   it("knows its parties and is equal by id", () => {
     const friendship = request();
     expect(friendship.involves("ana")).toBe(true);

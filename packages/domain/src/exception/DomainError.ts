@@ -21,3 +21,5 @@ export class NotAFriendshipPartyError extends DomainError {}
 export class DuplicateFriendshipError extends DomainError {}
 export class FriendshipNotFoundError extends DomainError {}
 export class FriendshipNotAcceptedError extends DomainError {}
+/** An external provider (database, API) failed. Never replaced by fake data. */
+export class ProviderFailureError extends DomainError {}

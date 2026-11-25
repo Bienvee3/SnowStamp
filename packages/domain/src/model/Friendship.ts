@@ -31,6 +31,13 @@ export class Friendship {
     return new Friendship(id, requesterId, addresseeId);
   }
 
+  /** Rebuilds a stored friendship (persistence only). Business transitions go through accept/remove. */
+  static restore(id: string, requesterId: string, addresseeId: string, state: FriendshipState): Friendship {
+    const friendship = Friendship.request(id, requesterId, addresseeId);
+    friendship.currentState = state;
+    return friendship;
+  }
+
   get state(): FriendshipState {
     return this.currentState;
   }
