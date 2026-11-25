@@ -18,3 +18,6 @@ export class UnknownResortError extends DomainError {}
 export class InvalidFriendshipError extends DomainError {}
 export class InvalidStateTransitionError extends DomainError {}
 export class NotAFriendshipPartyError extends DomainError {}
+export class DuplicateFriendshipError extends DomainError {}
+export class FriendshipNotFoundError extends DomainError {}
+export class FriendshipNotAcceptedError extends DomainError {}

@@ -1,7 +1,7 @@
 {
   "name": "snowstamp",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": ["packages/domain", "packages/application"],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
