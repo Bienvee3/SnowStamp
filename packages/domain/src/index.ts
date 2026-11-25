@@ -12,3 +12,4 @@ export * from "./service/PassportComparison.js";
 export * from "./service/ResortMembership.js";
 export * from "./service/VisitedPercentage.js";
 export * from "./repository/Repositories.js";
+export * from "./service/ResortEligibility.js";

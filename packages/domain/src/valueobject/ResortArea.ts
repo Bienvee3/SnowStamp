@@ -11,6 +11,7 @@ export interface Polygon {
 }
 
 const MIN_RING_LENGTH = 4;
+const EARTH_RADIUS_KM = 6371.0088;
 
 function validateRing(ring: Ring, label: string): void {
   if (ring.length < MIN_RING_LENGTH) {
@@ -61,6 +62,22 @@ function locateInRing(point: Coordinate, ring: Ring): RingPosition {
   return inside ? "inside" : "outside";
 }
 
+/** Planar area of a ring in km2, using a local equirectangular projection (accurate at resort scale). */
+function ringAreaSquareKm(ring: Ring): number {
+  const meanLatRad = ((ring.reduce((sum, c) => sum + c.latitude, 0) / ring.length) * Math.PI) / 180;
+  const project = (c: Coordinate): [number, number] => [
+    EARTH_RADIUS_KM * ((c.longitude * Math.PI) / 180) * Math.cos(meanLatRad),
+    EARTH_RADIUS_KM * ((c.latitude * Math.PI) / 180),
+  ];
+  let twiceArea = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const [x1, y1] = project(ring[i] as Coordinate);
+    const [x2, y2] = project(ring[i + 1] as Coordinate);
+    twiceArea += x1 * y2 - x2 * y1;
+  }
+  return Math.abs(twiceArea) / 2;
+}
+
 /**
  * The skiable domain of a resort (marked pistes and operating lifts) as a WGS84 MultiPolygon.
  * A point on the outer boundary counts as inside. A point inside a hole counts as outside.
@@ -81,6 +98,15 @@ export class ResortArea {
     });
     return new ResortArea(
       polygons.map((p) => ({ outer: [...p.outer], holes: p.holes.map((h) => [...h]) })),
+    );
+  }
+
+  /** Approximate area in km2: outer rings minus holes. Assumes polygons do not overlap. */
+  areaSquareKm(): number {
+    return this.polygons.reduce(
+      (total, polygon) =>
+        total + ringAreaSquareKm(polygon.outer) - polygon.holes.reduce((h, ring) => h + ringAreaSquareKm(ring), 0),
+      0,
     );
   }
 

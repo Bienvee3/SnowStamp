@@ -71,3 +71,28 @@ describe("ResortArea.contains", () => {
     expect(area.contains(at(25, 25))).toBe(true);
   });
 });
+
+describe("ResortArea.areaSquareKm", () => {
+  it("is about 12,364 km2 for one degree at the equator", () => {
+    const area = ResortArea.of([{ outer: rectangle(0, 0, 1, 1), holes: [] }]);
+    expect(area.areaSquareKm()).toBeGreaterThan(12300);
+    expect(area.areaSquareKm()).toBeLessThan(12430);
+  });
+
+  it("shrinks with latitude", () => {
+    const equator = ResortArea.of([{ outer: rectangle(0, 0, 1, 1), holes: [] }]);
+    const north = ResortArea.of([{ outer: rectangle(0, 60, 1, 61), holes: [] }]);
+    expect(north.areaSquareKm() / equator.areaSquareKm()).toBeCloseTo(0.5, 1);
+  });
+
+  it("subtracts holes and adds polygons", () => {
+    const solid = ResortArea.of([{ outer: rectangle(0, 0, 0.1, 0.1), holes: [] }]);
+    const holed = ResortArea.of([{ outer: rectangle(0, 0, 0.1, 0.1), holes: [rectangle(0.02, 0.02, 0.05, 0.05)] }]);
+    const double = ResortArea.of([
+      { outer: rectangle(0, 0, 0.1, 0.1), holes: [] },
+      { outer: rectangle(1, 1, 1.1, 1.1), holes: [] },
+    ]);
+    expect(holed.areaSquareKm()).toBeLessThan(solid.areaSquareKm());
+    expect(double.areaSquareKm()).toBeGreaterThan(solid.areaSquareKm() * 1.9);
+  });
+});
