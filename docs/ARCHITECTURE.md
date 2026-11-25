@@ -158,7 +158,7 @@ Organized by layer. Tests mirror the same tree.
 ## SnowStamp-specific notes
 
 ### Applicability to the stack
-Sections 1-4, 6, 8 (principles, pyramid), 9, 10, 11, 12 are stack-agnostic. The wording of sections 5, 7 and 8 assumes a server-side stack (HTTP controllers, ProblemDetail, ORM, migrations, web slice tests, containers, a coverage plugin). SnowStamp's end goal is a **mobile app on Play Store and App Store**, so the presentation layer is a mobile UI, possibly a client of a REST API. How each rule is realised depends on ADR-002, which is **still open**. Until it is accepted, do not scaffold code.
+Sections 1-4, 6, 8 (principles, pyramid), 9, 10, 11, 12 are stack-agnostic. The wording of sections 5, 7 and 8 assumes a server-side stack (HTTP controllers, ProblemDetail, ORM, migrations, web slice tests, containers, a coverage plugin). SnowStamp's end goal is a **mobile app on Play Store and App Store**, so the presentation layer is a mobile UI, possibly a client of a REST API. ADR-002 is **Accepted** (Expo + Next.js + TypeScript + Supabase/PostGIS): see its Consequences for how sections 5, 7 and 8 are realised.
 
 ### Initial domain sketch (proposal, not decided)
 Derived from issues #1-#3 only. Revise once the stack and the first domain tests exist.

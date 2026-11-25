@@ -11,7 +11,9 @@ SnowStamp is an app to record and interactively visualize personal trips to ski 
 - Pricing intent: free app; optional paid extras later. Not a current concern.
 
 ## Stack
-**Not decided.** See `docs/adr/002-stack-selection.md` (Proposed). No code, build or test tooling exists. Do not scaffold anything or assume a stack until that ADR is Accepted; then record versions and commands in this file.
+Decided in `docs/adr/002-stack-selection.md` (Accepted 2026-11-25): TypeScript everywhere; Expo (React Native) mobile app with MapLibre; Next.js public web (landing and waitlist); Supabase (PostgreSQL + PostGIS, auth, row-level security) behind domain ports. A resort is a WGS84 MultiPolygon of its skiable domain. Coverage: all countries and all their ski resorts.
+
+No code, build or test tooling exists yet. Record exact versions and commands in this file when the project is scaffolded and verified from a real build.
 
 ## Scope
 Source of truth for features: GitHub issues.
@@ -69,4 +71,4 @@ All repository content (code, comments, docs, commits) in English. Chat with the
 - Marketing material (videos, generators, social assets) is never versioned here. It lives in a sibling `marketing/` folder outside the repository. The only brand asset kept in the repo is the logo, `docs/assets/logo.png`, used by `README.md`.
 
 ## Build / test
-None yet. Document the commands here as soon as ADR-002 is Accepted.
+None yet. Document the commands here once the project is scaffolded (ADR-002 is Accepted).
