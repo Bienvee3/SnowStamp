@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-11-14
+Last updated: 2026-11-25
 
 ## Phase
 Pre-product validation in progress (waitlist and social content) and project foundations being laid. No code yet.
@@ -39,6 +39,7 @@ Full index in `docs/DECISIONS/README.md`.
 Marketing material is **not versioned**: it lives outside this repository, in a sibling `marketing/` folder (not public). Nothing under it may be committed here. The only exception is the logo (`docs/assets/logo.png`), used by the README.
 - Video 01 v6 (31.8 s, 1080x1920, Spanish voice-over, synthetic music), final candidate. Generated reproducibly from `marketing/video-01/` (`voice_external.py <audio>` -> `build.py`; edge-tts path in `voice.py` kept as fallback; deps: `edge-tts`, `faster-whisper`, `imageio-ffmpeg`, `numpy`, `pillow`; map data Natural Earth 50m cached in `marketing/.cache/`). Voice-over is an ElevenLabs file supplied by the owner, aligned to the script with faster-whisper; the reference TikTok voice could not be identified, no third-party voice cloning. Owner-requested changes applied: SFX at 35% gain and whooshes a further -8 dB, hook title raised with the map fully visible, brand caption "SNOWSTAMP:" shown alone before "TU PASAPORTE...", Iberian Peninsula centred. Percentages are demo values labelled "DATOS DE EJEMPLO"; resort coordinates are approximate. Owner approved the cut on 2026-11-14; not yet published. Earlier cuts v1-v5 kept in `marketing/video-01/out/`.
 - Videos 02-05 (2026-11-14, same engine, folders `marketing/video-02..05`): 02 "tu % del mundo" (28.8 s), 03 "reta a un amigo" (28.4 s), 04 "Excel vs mapa" (26.8 s), 05 "pregunta a la audiencia" (21.7 s). Rendered with the owner's ElevenLabs voice (aligned with `voice_external.py`, all words matched); MP4s in `marketing/video-0N/out/snowstamp-video-0N.mp4`; frames reviewed on contact sheets. Demo data tagged "DATOS DE EJEMPLO" ("Ana" is a placeholder friend). Not yet published. Scheduling: TikTok via desktop web (15 min to 10 days ahead), Instagram via app or Meta Business Suite (up to 30 days, 25/day).
+- Landing page (2026-11-25, passes 2-5): latest version "La cumbre" (single `index.html` + `fonts/` + `img/`, Spanish, worldwide focus), kept in `marketing/` outside this repo. Waitlist is the only CTA; the app is never presented as available (no store badges); UI data labelled as example. Checked with screenshots at 1440, 820 and 390 px; no taste-skill gate run on this version (v4 passed it with 5 waivers). Region names were written from memory and still need verification. Not yet published.
 
 ## Market research summary (2026-11-13)
 - Demand is real but niche: Reddit/forum threads asking for resort trackers, long-running "ski areas skied" threads on SkiTalk and Liftlines, hand-made spreadsheets and maps. Reddit pages could not be read (blocked); signals come from titles and search excerpts only.
