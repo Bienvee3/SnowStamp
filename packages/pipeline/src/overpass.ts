@@ -3,7 +3,7 @@ import type { OsmElement } from "./osm.js";
 
 const ENDPOINT = "https://overpass-api.de/api/interpreter";
 const MAX_ATTEMPTS = 6;
-const RETRY_STATUSES = new Set([429, 504]);
+const RETRY_STATUSES = new Set([429, 502, 503, 504]);
 const RETRY_STEP_MS = 20000;
 
 export type Fetch = (
