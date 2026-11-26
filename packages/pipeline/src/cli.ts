@@ -1,7 +1,7 @@
 // Usage: npm run extract -w @snowstamp/pipeline -- [--refresh] [ISO2 ...]
 // With no country codes it covers every country in the world (Wikidata list). Raw Overpass answers are
 // cached in data/out/raw/ so an interrupted run resumes; --refresh downloads them again.
-// Writes data/out/world.seed.sql, world.resorts.json, world.skipped.json (ignored by git; ODbL data).
+// Writes supabase/seed/world.seed.sql (versioned) and data/out/world.resorts.json, world.skipped.json (ignored).
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { Coordinate, ProviderFailureError } from "@snowstamp/domain";
@@ -77,7 +77,10 @@ async function lookupVotes(points: readonly Coordinate[]): Promise<Map<string, n
 
 const world = await buildWorld(codes, { fetchElements, lookupVotes });
 
-await writeFile(new URL("world.seed.sql", outDir), seedSql(world.resorts, countries));
+// The seed is versioned (ODbL data with attribution in its header); the intermediate files stay ignored.
+const seedDir = new URL("../../../supabase/seed/", import.meta.url);
+await mkdir(seedDir, { recursive: true });
+await writeFile(new URL("world.seed.sql", seedDir), seedSql(world.resorts, countries));
 await writeFile(
   new URL("world.resorts.json", outDir),
   JSON.stringify({ attribution: OSM_ATTRIBUTION, resorts: world.resorts.map(({ polygons: _p, ...r }) => r) }, null, 2),

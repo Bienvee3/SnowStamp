@@ -84,6 +84,6 @@ Verified on Node 24.21, npm 11.19, TypeScript 7.0.2, Vitest 5.1.2 (+ `@vitest/co
 - Type-check a package: `npm run typecheck --workspaces`
 - Unit tests with the 80% coverage gate: `npm test` (domain, application, pipeline, web; each fails below 80%)
 - Integration tests (need Docker running): `npm run test:integration` starts PostGIS and PostgREST containers, runs the migrations, the SQL tests in `supabase/tests`, then the infrastructure tests (coverage gate applies).
-- World resort extraction: `npm run extract -w @snowstamp/pipeline -- [--refresh] [ISO2 ...]` (no codes = every country; caches raw answers in `data/out/raw/`; writes `world.seed.sql`, `world.resorts.json`, `world.skipped.json` in ignored `data/out/`; Overpass rate limits apply).
+- World resort extraction: `npm run extract -w @snowstamp/pipeline -- [--refresh] [ISO2 ...]` (no codes = every country; caches raw answers in `data/out/raw/`; writes the versioned `supabase/seed/world.seed.sql` and, in ignored `data/out/`, `world.resorts.json` and `world.skipped.json`; Overpass rate limits apply).
 - Public site: `NEXT_PUBLIC_WAITLIST_URL=<https form url> npm run build -w @snowstamp/web`. The form URL is configuration, never committed.
 - Next.js 16.4.6, React 19.3.1, @supabase/postgrest-js 1.x, Postgres 16 + PostGIS 3.4 (`postgis/postgis:16-3.4`), PostgREST v12.2.3 (test containers).
