@@ -82,6 +82,24 @@ describe("overpass helpers", () => {
     expect(waits).toEqual([20000]);
   });
 
+  it("retries a dropped connection and reports it as a provider failure when it persists", async () => {
+    const waits: number[] = [];
+    const flaky = [new TypeError("fetch failed"), reply(200, { elements: [] })];
+    const next = async () => {
+      const item = flaky.shift();
+      if (item instanceof Error) {
+        throw item;
+      }
+      return item as never;
+    };
+    expect(await runOverpass("q", next, async (ms) => void waits.push(ms))).toEqual([]);
+    expect(waits).toEqual([20000]);
+    const down = async () => {
+      throw new TypeError("fetch failed");
+    };
+    await expect(runOverpass("q", down, async () => undefined)).rejects.toThrow(ProviderFailureError);
+  });
+
   it("raises a provider failure for other errors and after too many retries", async () => {
     await expect(runOverpass("q", async () => reply(400), async () => undefined)).rejects.toThrow(ProviderFailureError);
     await expect(runOverpass("q", async () => reply(504), async () => undefined)).rejects.toThrow(ProviderFailureError);

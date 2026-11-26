@@ -19,11 +19,21 @@ export async function runOverpass(
   sleep: Sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 ): Promise<readonly OsmElement[]> {
   for (let attempt = 1; ; attempt++) {
-    const response = await fetchImpl(ENDPOINT, {
-      method: "POST",
-      headers: { "User-Agent": "SnowStampPipeline/0.1 (resort data curation)", "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ data: query }).toString(),
-    });
+    let response: Awaited<ReturnType<Fetch>>;
+    try {
+      response = await fetchImpl(ENDPOINT, {
+        method: "POST",
+        headers: { "User-Agent": "SnowStampPipeline/0.1 (resort data curation)", "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ data: query }).toString(),
+      });
+    } catch (error) {
+      // Network failure (dropped connection, DNS): retried like a busy server, then reported as a provider failure.
+      if (attempt === MAX_ATTEMPTS) {
+        throw new ProviderFailureError(`Overpass unreachable: ${(error as Error).message}`);
+      }
+      await sleep(attempt * RETRY_STEP_MS);
+      continue;
+    }
     if (response.ok) {
       return ((await response.json()) as { elements: OsmElement[] }).elements;
     }
