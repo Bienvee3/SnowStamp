@@ -1,45 +1,71 @@
-// Usage: npm run extract -w @snowstamp/pipeline -- <ISO2 country code> [min area km2]
-// Writes data/out/<cc>.candidates.json, <cc>.skipped.json and <cc>.seed.sql (ignored by git; ODbL data).
-import { mkdir, writeFile } from "node:fs/promises";
-import { extractCandidates } from "./candidates.js";
+// Usage: npm run extract -w @snowstamp/pipeline -- [--refresh] [ISO2 ...]
+// With no country codes it covers every country in the world (Wikidata list). Raw Overpass answers are
+// cached in data/out/raw/ so an interrupted run resumes; --refresh downloads them again.
+// Writes data/out/world.seed.sql, world.resorts.json, world.skipped.json (ignored by git; ODbL data).
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { Coordinate, ProviderFailureError } from "@snowstamp/domain";
+import { COUNTRIES_SPARQL, parseCountries, type WikidataBinding } from "./countries.js";
 import { OSM_ATTRIBUTION, buildCountryQuery, type OsmElement } from "./osm.js";
+import { lookupCountryVotes, runOverpass } from "./overpass.js";
 import { seedSql } from "./sql.js";
+import { buildWorld } from "./world.js";
 
-const [country, minArea] = process.argv.slice(2);
-if (country === undefined) {
-  console.error("Usage: extract <ISO2 country code> [min area km2]");
-  process.exit(1);
-}
-
-async function query(): Promise<Response> {
-  for (let attempt = 1; ; attempt++) {
-    const response = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      headers: { "User-Agent": "SnowStampPipeline/0.1 (resort data curation)", "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ data: buildCountryQuery(country as string) }),
-    });
-    const retryable = response.status === 429 || response.status === 504;
-    if (response.ok || !retryable || attempt === 6) {
-      return response;
-    }
-    await new Promise((resolve) => setTimeout(resolve, attempt * 20000));
-  }
-}
-
-const response = await query();
-if (!response.ok) {
-  throw new Error(`Overpass answered ${response.status}: ${await response.text()}`);
-}
-const { elements } = (await response.json()) as { elements: OsmElement[] };
-const result = extractCandidates(elements, country, minArea === undefined ? undefined : Number(minArea));
+const PAUSE_BETWEEN_COUNTRIES_MS = 3000;
+const args = process.argv.slice(2);
+const refresh = args.includes("--refresh");
+const requested = args.filter((a) => !a.startsWith("--")).map((a) => a.toLowerCase());
 
 const outDir = new URL("../../../data/out/", import.meta.url);
-await mkdir(outDir, { recursive: true });
-const cc = country.toLowerCase();
-await writeFile(
-  new URL(`${cc}.candidates.json`, outDir),
-  JSON.stringify({ attribution: OSM_ATTRIBUTION, candidates: result.candidates.map(({ polygons: _p, ...c }) => c) }, null, 2),
+const rawDir = new URL("raw/", outDir);
+await mkdir(rawDir, { recursive: true });
+
+const wikidata = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(COUNTRIES_SPARQL)}`, {
+  headers: { "User-Agent": "SnowStampPipeline/0.1 (resort data curation)", Accept: "application/sparql-results+json" },
+});
+if (!wikidata.ok) {
+  throw new ProviderFailureError(`Wikidata answered ${wikidata.status}`);
+}
+const { countries, unresolved } = parseCountries(
+  ((await wikidata.json()) as { results: { bindings: WikidataBinding[] } }).results.bindings,
 );
-await writeFile(new URL(`${cc}.skipped.json`, outDir), JSON.stringify(result.skipped, null, 2));
-await writeFile(new URL(`${cc}.seed.sql`, outDir), seedSql(result.candidates));
-console.log(`${cc}: ${result.candidates.length} candidates, ${result.skipped.length} skipped (of ${elements.length} elements)`);
+if (unresolved.length > 0) {
+  console.warn(`Continent unclear, add to CONTINENT_OVERRIDES: ${unresolved.join(", ")}`);
+}
+const codes = requested.length > 0 ? requested : countries.map((c) => c.code);
+
+async function fetchElements(code: string): Promise<readonly OsmElement[]> {
+  const file = new URL(`${code}.json`, rawDir);
+  if (!refresh) {
+    try {
+      return JSON.parse(await readFile(file, "utf8")) as OsmElement[];
+    } catch {
+      // not cached yet
+    }
+  }
+  await new Promise((resolve) => setTimeout(resolve, PAUSE_BETWEEN_COUNTRIES_MS));
+  let elements: readonly OsmElement[];
+  try {
+    elements = await runOverpass(buildCountryQuery(code));
+  } catch (error) {
+    console.error(`${code}: ${(error as Error).message}`);
+    throw error;
+  }
+  await writeFile(file, JSON.stringify(elements));
+  console.log(`${code}: ${elements.length} elements`);
+  return elements;
+}
+
+const world = await buildWorld(codes, {
+  fetchElements,
+  lookupVotes: (points: readonly Coordinate[]) => lookupCountryVotes(points),
+});
+
+await writeFile(new URL("world.seed.sql", outDir), seedSql(world.resorts, countries));
+await writeFile(
+  new URL("world.resorts.json", outDir),
+  JSON.stringify({ attribution: OSM_ATTRIBUTION, resorts: world.resorts.map(({ polygons: _p, ...r }) => r) }, null, 2),
+);
+await writeFile(new URL("world.skipped.json", outDir), JSON.stringify(world.skipped, null, 2));
+console.log(
+  `${world.resorts.length} resorts, ${world.skipped.length} skipped, failed countries: ${world.failedCountries.join(", ") || "none"}`,
+);
