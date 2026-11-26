@@ -31,7 +31,7 @@ export const CONTINENT_OVERRIDES: Readonly<Record<string, Continent>> = {
   um: Continent.Oceania,
 };
 
-/** Obsolete or non-country codes that Wikidata still lists with an ISO 3166-1 property. */
+/** Obsolete codes that Wikidata still lists; codes that are not two letters (such as GB-WLS) are dropped too. */
 const EXCLUDED_CODES: ReadonlySet<string> = new Set(["su"]);
 
 export interface WikidataBinding {
@@ -45,7 +45,7 @@ export function parseCountries(bindings: readonly WikidataBinding[]): { countrie
   const grouped = new Map<string, { name: string; continents: Set<Continent> }>();
   for (const b of bindings) {
     const code = b.iso.value.toLowerCase();
-    if (EXCLUDED_CODES.has(code)) {
+    if (!/^[a-z]{2}$/.test(code) || EXCLUDED_CODES.has(code)) {
       continue;
     }
     const entry = grouped.get(code) ?? { name: b.cLabel.value, continents: new Set<Continent>() };

@@ -138,6 +138,7 @@ describe("parseCountries", () => {
       row("XX", "Nowhere", "Asia"),
       row("YY", "Eurasia land", "Eurasia"),
       row("SU", "Soviet Union", "Europe"),
+      row("GB-WLS", "Wales", "Europe"),
     ]);
     expect(countries).toEqual([{ code: "tr", name: "Turkey", continent: Continent.Asia }]);
     expect(unresolved).toEqual(["xx", "yy"]);
