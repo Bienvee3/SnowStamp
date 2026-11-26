@@ -98,9 +98,13 @@ describe("extractCandidates", () => {
     ]);
   });
 
-  it("keeps every named domain, however small", () => {
-    const { candidates } = extractCandidates([way(4, "Tiny Lift", box(0, 42, 0.001, 42.001))], "es");
-    expect(candidates.map((c) => c.key)).toEqual(["es-tiny-lift"]);
+  it("skips a domain under 0.01 km2 with its area, and keeps a larger one", () => {
+    const { candidates, skipped } = extractCandidates(
+      [way(4, "Tiny Lift", box(0, 42, 0.001, 42.001)), way(5, "Small Hill", box(0, 42, 0.01, 42.01))],
+      "es",
+    );
+    expect(candidates.map((c) => c.key)).toEqual(["es-small-hill"]);
+    expect(skipped).toEqual([{ osmRef: "way/4", name: "Tiny Lift", reason: expect.stringContaining("below 0.01 km2") }]);
   });
 
   it("merges nearby sectors of one resort into a single entry", () => {

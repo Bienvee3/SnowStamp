@@ -77,6 +77,9 @@ export function slugify(name: string): string {
   return (sector === -1 ? words : words.slice(0, sector)).join("-");
 }
 
+/** Owner decision 2026-11-26: a named domain under this area is a single lift or a play area, not a resort. */
+export const MIN_RESORT_AREA_SQUARE_KM = 0.01;
+
 /** Elements of one name closer than this (gap between bounding boxes) are sectors of the same resort. */
 export const SECTOR_MERGE_MAX_GAP_KM = 15;
 const KM_PER_DEGREE = 111.195;
@@ -132,7 +135,7 @@ function clusterSectors(entries: readonly Entry[]): Entry[][] {
 /**
  * Turns OSM winter-sports polygons into one candidate per resort. Unnamed, closed-down or unusable elements
  * are skipped with a reason, never dropped silently; there is no size threshold (every named domain counts).
- * Elements with the same name close to each other are sectors and merge into one MultiPolygon. Keys are
+ * The smallest domains (under MIN_RESORT_AREA_SQUARE_KM) are skipped with their area. Elements with the same name close to each other are sectors and merge into one MultiPolygon. Keys are
  * unique: a second, distant resort with the same name gets its smallest OSM id appended.
  */
 export function extractCandidates(elements: readonly OsmElement[], countryCode: string): ExtractionResult {
@@ -184,6 +187,11 @@ export function extractCandidates(elements: readonly OsmElement[], countryCode: 
   );
   for (const { slug, cluster } of clusters.sort((a, b) => (a.cluster[0] as Entry).id - (b.cluster[0] as Entry).id)) {
     const first = cluster[0] as Entry;
+    const totalArea = ResortArea.of(cluster.flatMap((e) => e.polygons)).areaSquareKm();
+    if (totalArea < MIN_RESORT_AREA_SQUARE_KM) {
+      skipped.push({ osmRef: first.osmRef, name: first.name, reason: `area ${totalArea.toFixed(4)} km2 below ${MIN_RESORT_AREA_SQUARE_KM} km2` });
+      continue;
+    }
     const largest = cluster.reduce((best, e) => (e.area > best.area ? e : best));
     let key = `${country}-${slug}`;
     if (usedKeys.has(key)) {
