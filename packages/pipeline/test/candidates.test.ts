@@ -58,20 +58,30 @@ describe("extractCandidates", () => {
     expect(candidates[0]?.areaSquareKm).toBeGreaterThan(30);
   });
 
-  it("skips unnamed, unusable, unslugable, open and closed-down elements with a reason", () => {
+  it("skips unnamed, open, closed-down and non-resort elements with a reason", () => {
     const elements: OsmElement[] = [
       way(1, undefined, box(0, 40, 1, 41)),
-      way(2, "!!!", box(0, 40, 1, 41)),
       way(3, "Open", [p(0, 0), p(1, 0), p(1, 1)]),
       way(5, "Sector Celleros (abandonado)", box(0, 40, 1, 41)),
+      way(6, "Basic Training Terrain Park", box(0, 40, 1, 41)),
     ];
     const { candidates, skipped } = extractCandidates(elements, "es");
     expect(candidates).toEqual([]);
     expect(skipped.map((s) => s.reason)).toEqual([
       "unnamed",
-      "name has no usable characters",
       "way is not a closed ring",
       "closed or abandoned",
+      "not a resort (terrain park, biathlon, tubing or sledding)",
+    ]);
+  });
+
+  it("keys a name in another script by its Latin-script tag, or by the OSM id, and never drops it", () => {
+    const hakuba = { ...way(7, "白馬コルチナ", box(137.8, 36.7, 137.9, 36.8)), tags: { name: "白馬コルチナ", "name:en": "Hakuba Cortina" } };
+    const { candidates } = extractCandidates([hakuba, way(8, "卧虎山滑雪场", box(116, 40, 116.1, 40.1)), way(9, "!!!", box(0, 40, 1, 41))], "jp");
+    expect(candidates.map((c) => [c.key, c.name])).toEqual([
+      ["jp-hakuba-cortina", "白馬コルチナ"],
+      ["jp-osm-8", "卧虎山滑雪场"],
+      ["jp-osm-9", "!!!"],
     ]);
   });
 

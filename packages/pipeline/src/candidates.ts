@@ -51,6 +51,10 @@ const SECTOR_WORDS = new Set(["sector", "sectores", "sektor"]);
 const GENERIC_SUFFIX = / estacion de esqui$/;
 /** Names that mark a closed or abandoned area: it must not count as a resort. */
 const INACTIVE_NAME = /abandon|cerrad|closed|disused/i;
+/** Parts of a resort or training venues, not resorts: terrain parks, biathlon ranges, tubing and sledding runs. */
+const NOT_A_RESORT = /terrain park|biathlon|tubing|tube park|sled/i;
+/** Tags holding a Latin-script name, tried in order when the local name has no Latin letters. */
+const LATIN_NAME_TAGS = ["name:en", "int_name", "name:latin", "name:es"];
 
 const stripAccents = (text: string): string => text.normalize("NFD").replace(/[̀-ͯ]/g, "");
 
@@ -146,11 +150,14 @@ export function extractCandidates(elements: readonly OsmElement[], countryCode: 
       skipped.push({ osmRef, name, reason: "closed or abandoned" });
       continue;
     }
-    const slug = slugify(name);
-    if (slug === "") {
-      skipped.push({ osmRef, name, reason: "name has no usable characters" });
+    if (NOT_A_RESORT.test(name)) {
+      skipped.push({ osmRef, name, reason: "not a resort (terrain park, biathlon, tubing or sledding)" });
       continue;
     }
+    // Names in other scripts (Japanese, Chinese, Cyrillic...) take their key from a Latin-script name tag; if there
+    // is none, from the OSM id. No resort is dropped for its name.
+    const latin = LATIN_NAME_TAGS.map((tag) => element.tags?.[tag]?.trim() ?? "").find((n) => slugify(n) !== "");
+    const slug = slugify(name) || (latin === undefined ? `osm-${element.id}` : slugify(latin));
     const result = toPolygons(element);
     if ("skipped" in result) {
       skipped.push({ osmRef, name, reason: result.skipped });
