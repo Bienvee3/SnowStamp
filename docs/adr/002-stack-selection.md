@@ -43,7 +43,7 @@ The end goal is an app published on Play Store and App Store. The owner develops
 - PostGIS handles spatial queries (`ST_Contains`, `ST_DWithin`) on `geography`/`geometry` in WGS84 (SRID 4326), for example validating a GPS point against a resort polygon.
 - A `Resort` is modelled as a `MultiPolygon` in WGS84 covering its skiable domain (marked pistes and operating lifts). Circular radii and municipal boundaries are rejected: they produce false positives in nearby towns.
 - No "official" polygon dataset exists for every resort. Polygons are derived from OpenSkiMap/OSM (ODbL, visible attribution) and curated.
-- The resort-membership rule is a pure domain service with deterministic unit tests on real edge coordinates (for example Formigal and Baqueira): point on a piste, point in the base car park, point on the access road.
+- Amended 2026-11-26: visits are marked manually (country, then resort), so the GPS resort-membership service and `resorts_covering` were removed. The polygon is kept to draw the resort on the map.
 - Domain unit tests run without a database, so the pure service needs an in-process geometry implementation; PostGIS queries must be tested for agreement with it in an integration profile.
 
 ### Rejected

@@ -1,5 +1,4 @@
 import { InvalidResortError } from "../exception/DomainError.js";
-import { Coordinate } from "../valueobject/Coordinate.js";
 import { ResortArea } from "../valueobject/ResortArea.js";
 import { ResortKey } from "../valueobject/ResortKey.js";
 
@@ -8,7 +7,7 @@ export class Resort {
   private constructor(
     readonly key: ResortKey,
     readonly name: string,
-    private readonly area: ResortArea,
+    readonly area: ResortArea,
   ) {}
 
   static create(key: ResortKey, name: string, area: ResortArea): Resort {
@@ -20,10 +19,6 @@ export class Resort {
 
   get countryCode(): string {
     return this.key.countryCode;
-  }
-
-  contains(point: Coordinate): boolean {
-    return this.area.contains(point);
   }
 
   equals(other: Resort): boolean {

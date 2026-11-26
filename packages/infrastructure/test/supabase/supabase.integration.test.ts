@@ -2,7 +2,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type pg from "pg";
 import { PassportService, FriendshipService } from "@snowstamp/application";
 import {
-  Coordinate,
   DuplicateFriendshipError,
   FriendshipNotAcceptedError,
   ProviderFailureError,
@@ -46,25 +45,6 @@ describe("SupabaseResortCatalog against PostGIS", () => {
       "cl:south-america",
       "es:europe",
     ]);
-  });
-
-  it("agrees with ST_Covers on a grid of points, including edges and vertices", async () => {
-    const resorts = await new SupabaseResortCatalog(clientFor(ANA)).resorts();
-    const lons = [-0.45, -0.42, -0.38, -0.34, -0.3, 0.9, 0.94, 0.98, 0.99, 1.0, 1.02, 1.04, 1.1, 1.6, 1.7, 1.74];
-    const lats = [42.5, 42.52, 42.55, 42.58, 42.68, 42.7, 42.72, 42.73, 42.74, 42.755, 42.76, 42.78, 42.8, 42.9];
-    let checked = 0;
-    for (const lon of lons) {
-      for (const lat of lats) {
-        const inDomain = resorts
-          .filter((r) => r.contains(Coordinate.of(lon, lat)))
-          .map((r) => r.key.value)
-          .sort();
-        const result = await db.query("select key from public.resorts_covering($1, $2) order by key", [lon, lat]);
-        expect(inDomain, `point ${lon},${lat}`).toEqual(result.rows.map((r: { key: string }) => r.key));
-        checked += 1;
-      }
-    }
-    expect(checked).toBe(lons.length * lats.length);
   });
 });
 

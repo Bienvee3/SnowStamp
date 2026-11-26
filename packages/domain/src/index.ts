@@ -9,7 +9,6 @@ export * from "./model/Friendship.js";
 export * from "./model/Passport.js";
 export * from "./model/Resort.js";
 export * from "./service/PassportComparison.js";
-export * from "./service/ResortMembership.js";
 export * from "./service/VisitedPercentage.js";
 export * from "./repository/Repositories.js";
 export * from "./service/ResortEligibility.js";

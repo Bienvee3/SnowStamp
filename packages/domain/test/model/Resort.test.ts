@@ -4,13 +4,11 @@ import { Country, Continent } from "../../src/model/Country.js";
 import { Resort } from "../../src/model/Resort.js";
 import { CountryCode } from "../../src/valueobject/CountryCode.js";
 import { ResortKey } from "../../src/valueobject/ResortKey.js";
-import { FORMIGAL, FORMIGAL_AREA, at } from "../fixtures.js";
+import { FORMIGAL, FORMIGAL_AREA } from "../fixtures.js";
 
 describe("Resort", () => {
-  it("derives the country from its key and delegates containment to its area", () => {
+  it("derives the country from its key", () => {
     expect(FORMIGAL.countryCode).toBe("es");
-    expect(FORMIGAL.contains(at(-0.38, 42.78))).toBe(true);
-    expect(FORMIGAL.contains(at(-0.38, 42.7))).toBe(false);
   });
 
   it("trims the name and rejects a blank one", () => {
