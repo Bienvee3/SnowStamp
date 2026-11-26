@@ -1,0 +1,10 @@
+{
+  "name": "snowstamp",
+  "private": true,
+  "workspaces": ["packages/domain", "packages/application", "packages/infrastructure", "packages/pipeline", "apps/web"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test -w @snowstamp/domain -w @snowstamp/application -w @snowstamp/pipeline -w @snowstamp/web",
+    "test:integration": "bash scripts/integration.sh"
+  }
+}

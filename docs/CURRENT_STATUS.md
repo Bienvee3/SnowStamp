@@ -3,15 +3,17 @@
 Last updated: 2026-11-25
 
 ## Phase
-Stack accepted (ADR-002). Validation content published on TikTok; project foundations done; scaffolding next. No code yet.
+Stack accepted (ADR-002). Validation content published on TikTok. Phase 1 (`review/phase-1`) built the domain, application, Supabase adapters, SQL schema, OSM extraction pipeline and the public web page; the Expo mobile app and data curation are next.
 
-Build order position (see `docs/ARCHITECTURE.md` section 12): step 1 in progress (`AGENTS.md`, status file, architecture and ADRs done; local dev infrastructure unblocked, not started).
+Build order position (see `docs/ARCHITECTURE.md` section 12): steps 1-5 and 7 done on `review/phase-1` (workspace, schema, domain, repositories, application services, adapters); steps 6 (auth/API hardening) and 9 (UI: Expo app) are pending.
 
 ## Repository
-- Branch: `main`, tracking `origin/main`. Docs-only baseline pushed on 2026-11-13. Working tree clean.
+- `main` (pushed, docs only) and `review/phase-1` (local, not pushed, not merged): workspace scaffold, domain, application and SQL commits. Awaiting owner review and push authorization.
 - Remote: `origin` -> `https://github.com/Bienvee3/SnowStamp` (renamed from `ski-been`).
 - Open issues: #1 world map with lit-up resorts, #2 visited percentages, #3 friends comparison, #4 run logging (deferred).
-- Tests: none. Build: none.
+- Unit tests: domain 77, application 15, pipeline 19, web 7, all passing; coverage 98-100% lines (gate 80%). Integration tests: 14 against real PostGIS 16 + PostgREST containers, passing. Build and type-check pass.
+- Verified against a real database: migrations, resort constraints (key/country match, valid geometry), RLS policies, the Supabase adapters. The integration run found and fixed two real bugs (friendship accept blocked by an upsert insert check; auth stub).
+- Real OSM data loaded cleanly: Spain 32 candidate resorts and Andorra 3 (valid MultiPolygons in PostGIS). Test fixtures still use illustrative polygons near Formigal/Baqueira.
 - Docs baseline is on GitHub. Work proceeds in `review/phase-N` branches from now on.
 
 ## Documentation present
@@ -57,16 +59,18 @@ Waitlist signups after the first week of content: <20 weak; 50-100 justifies an 
 ## Known risks
 - What counts as a "resort" (OSM includes tiny ski areas) defines every percentage; it must be curated and tested before the UI.
 - Some architecture rules are worded for a server-side stack; ADR-002 lists the reinterpretations (no controller layer, RLS authorization, Supabase migrations). Map each rule to code when scaffolding.
-- No official polygon dataset exists for every resort; polygons must be derived from OSM and curated. Covering all countries makes data curation the main cost.
-- ST_Contains/ST_DWithin only matter for GPS validation; issues #1-#3 mark visits manually. Decide when GPS check-in enters scope.
+- No official polygon dataset exists for every resort; polygons are derived from OSM and curated. Covering all countries makes data curation the main cost.
+- Curation rules (owner decision 2026-11-26): every named OSM ski domain counts, with no size threshold; sector polygons with the same name within 15 km merge into one resort (`San Isidro Sector X` -> `es-san-isidro`); a resort crossing a border counts only in the country holding most of it (share measured on a 7x7 grid of points inside it via Overpass `is_in`), and in both when the smaller country holds >= 40% (`CLEARLY_SHARED_MIN_SHARE`, tunable). Polygons come from `landuse=winter_sports` (mapped resort domain, not strictly pistes and lifts); unnamed or closed-down ones are skipped with a reason. Country and continent come from Wikidata (transcontinental ones via `CONTINENT_OVERRIDES`: TR/KZ asia, RU/CY europe: to review).
+- Stamps are chosen manually (country, then resort); GPS membership (`ResortMembership`, `resorts_covering`) was removed 2026-11-26. Polygons are kept only to draw resorts on the map. Each resort is one unique entry per country (key `cc-slug`).
 - Name conflict: a web search (2026-11-25) found no "SnowStamp" mark or app, but TMview/OEPM were not queried (not searchable that way). Owner believes there is no conflict; the official check is still open.
 - Store rules checked 2026-11-25 from official pages: Google Play personal developer accounts created after 2023-11-13 need a closed test with >= 12 testers opted in for 14 continuous days before production access (<https://support.google.com/googleplay/android-developer/answer/14151465>); Apple guideline 5.1.1(v) requires in-app account deletion for apps with account creation (<https://developer.apple.com/support/offering-account-deletion-in-your-app>). Privacy policy is required by both stores. Re-verify at release; the waitlist can seed the 12 testers.
 
 ## Next steps
-1. Scaffold the project per ADR-002 on `review/phase-1`; record verified versions and commands in `AGENTS.md`.
-2. Local dev infrastructure (Supabase CLI), versioned schema with PostGIS and seed.
-3. Domain core with unit tests: the resort-membership service on real polygons (Formigal, Baqueira: piste, base car park, access road), then the visited-percentage service.
-4. Resort data pipeline: derive polygons for all countries from OSM, curate, attribute (ODbL).
-5. Public web (Next.js): landing "La cumbre" live with waitlist registration for the launch.
-6. Verify landing region names; keep publishing content and tracking waitlist signups weekly.
+1. Owner reviews `review/phase-1`, authorizes push and merge to `main`.
+2. World run done 2026-11-26 (255 countries, none failed): 3,877 resorts in 66 countries (Europe 2,146; Asia 871; North America 797; Oceania 36; South America 22; Africa 5). Top: US 575, JP 515, CH 290, AT 277, CN 257, FR 251, CA 221, DE 217, IT 197, NO 185. Skipped 360: 281 unnamed, 40 border-crossing (kept in the majority country), 28 terrain parks/biathlon/tubing, 6 unclosable relations, 3 closed, 2 border country undetermined. Listed in two countries: Ischgl-Samnaun (AT/CH), Steinplatte-Winklmoosalm (AT/DE), Dole-Tuffes (CH/FR), snowpark (CZ/PL). 339 resorts have an `osm-<id>` key (no Latin-script name): they need a readable name. Next: review `data/out/world.resorts.json` and `world.skipped.json`, check the continent overrides, then load `world.seed.sql`.
+3. Expo mobile app: map (MapLibre), passport, progress, friends, auth, account deletion; wire the application services to the Supabase adapters.
+4. Production Supabase project: apply migrations, configure auth (needs the owner's account and keys).
+5. Deploy the web (hosting choice and domain are the owner's; nothing paid yet); fill the privacy policy controller and contact.
+6. Verify landing region names against the all-countries goal.
 7. Official trademark check in TMview (EUIPO) and OEPM, classes 9, 41, 42.
+8. Add in-app account deletion and a privacy policy before store submission; plan the 12-tester closed test for Google Play.

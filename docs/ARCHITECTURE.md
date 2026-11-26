@@ -160,7 +160,10 @@ Organized by layer. Tests mirror the same tree.
 ### Applicability to the stack
 Sections 1-4, 6, 8 (principles, pyramid), 9, 10, 11, 12 are stack-agnostic. The wording of sections 5, 7 and 8 assumes a server-side stack (HTTP controllers, ProblemDetail, ORM, migrations, web slice tests, containers, a coverage plugin). SnowStamp's end goal is a **mobile app on Play Store and App Store**, so the presentation layer is a mobile UI, possibly a client of a REST API. ADR-002 is **Accepted** (Expo + Next.js + TypeScript + Supabase/PostGIS): see its Consequences for how sections 5, 7 and 8 are realised.
 
-### Initial domain sketch (proposal, not decided)
+### Implemented layout (phase 1)
+`packages/domain` (value objects, `Resort`, `Country`, `Passport`, `Friendship`, pure services, repository ports), `packages/application` (`PassportService`, `FriendshipService`, DTOs with `from(entity)`), `packages/infrastructure` (Supabase/PostgREST adapters, UUID generator), `packages/pipeline` (OSM extraction to seed SQL) and `apps/web` (Next.js). Tests mirror `src`; infrastructure tests run against real PostGIS and PostgREST containers. SQL lives in `supabase/migrations`, its checks in `supabase/tests`. In this stack the "controller" role is played by the Supabase API plus row-level security.
+
+### Initial domain sketch (implemented in phase 1; revise as the UI arrives)
 Derived from issues #1-#3 only. Revise once the stack and the first domain tests exist.
 
 | Concept | Kind | Notes |
