@@ -67,7 +67,7 @@ Waitlist signups after the first week of content: <20 weak; 50-100 justifies an 
 
 ## Next steps
 1. Owner reviews `review/phase-1`, authorizes push and merge to `main`.
-2. Review the world run output in `data/out/` (`world.resorts.json`, `world.skipped.json`) and the continent overrides; then load `world.seed.sql`.
+2. World run done 2026-11-26 (255 countries, none failed): 3,877 resorts in 66 countries (Europe 2,146; Asia 871; North America 797; Oceania 36; South America 22; Africa 5). Top: US 575, JP 515, CH 290, AT 277, CN 257, FR 251, CA 221, DE 217, IT 197, NO 185. Skipped 360: 281 unnamed, 40 border-crossing (kept in the majority country), 28 terrain parks/biathlon/tubing, 6 unclosable relations, 3 closed, 2 border country undetermined. Listed in two countries: Ischgl-Samnaun (AT/CH), Steinplatte-Winklmoosalm (AT/DE), Dole-Tuffes (CH/FR), snowpark (CZ/PL). 339 resorts have an `osm-<id>` key (no Latin-script name): they need a readable name. Next: review `data/out/world.resorts.json` and `world.skipped.json`, check the continent overrides, then load `world.seed.sql`.
 3. Expo mobile app: map (MapLibre), passport, progress, friends, auth, account deletion; wire the application services to the Supabase adapters.
 4. Production Supabase project: apply migrations, configure auth (needs the owner's account and keys).
 5. Deploy the web (hosting choice and domain are the owner's; nothing paid yet); fill the privacy policy controller and contact.
