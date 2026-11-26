@@ -4,6 +4,7 @@ import { CLEARLY_SHARED_MIN_SHARE, CountryUndeterminedError, decideCountries, sa
 import { CONTINENT_OVERRIDES, parseCountries } from "../src/countries.js";
 import type { LatLon, OsmElement } from "../src/osm.js";
 import { buildCountryOfPointsQuery, countVotes, lookupCountryVotes, runOverpass, type Fetch } from "../src/overpass.js";
+import { romanize } from "../src/romanize.js";
 import { buildWorld, type WorldDeps } from "../src/world.js";
 
 const p = (lon: number, lat: number): LatLon => ({ lon, lat });
@@ -197,5 +198,15 @@ describe("buildWorld", () => {
     await expect(buildWorld(["es"], broken)).rejects.toThrow(TypeError);
     const lookupBug = deps(new TypeError("bug"), { es: [pal], ad: [pal] });
     await expect(buildWorld(["es", "ad"], lookupBug)).rejects.toThrow(TypeError);
+  });
+});
+
+describe("romanize", () => {
+  it("reads Cyrillic and Chinese, and leaves other scripts and Latin names alone", () => {
+    expect(romanize("Горнолыжная база")).toBe("Gornolyzhnaya Baza");
+    expect(romanize("北京渔阳国际滑雪场")).toBe("Bei Jing Yu Yang Guo Ji Hua Xue Chang");
+    expect(romanize("白馬コルチナ")).toBeUndefined();
+    expect(romanize("비발디파크")).toBeUndefined();
+    expect(romanize("Hakuba 白馬")).toBeUndefined();
   });
 });

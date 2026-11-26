@@ -10,7 +10,8 @@
     "extract": "tsc -p tsconfig.build.json && node dist/cli.js"
   },
   "dependencies": {
-    "@snowstamp/domain": "0.0.0"
+    "@snowstamp/domain": "0.0.0",
+    "pinyin-pro": "^3.29.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.10",

@@ -1,5 +1,6 @@
 import { Coordinate, Polygon, ResortArea, ResortKey } from "@snowstamp/domain";
 import { toPolygons } from "./area.js";
+import { romanize } from "./romanize.js";
 import type { OsmElement } from "./osm.js";
 
 export interface Candidate {
@@ -154,10 +155,12 @@ export function extractCandidates(elements: readonly OsmElement[], countryCode: 
       skipped.push({ osmRef, name, reason: "not a resort (terrain park, biathlon, tubing or sledding)" });
       continue;
     }
-    // Names in other scripts (Japanese, Chinese, Cyrillic...) take their key from a Latin-script name tag; if there
-    // is none, from the OSM id. No resort is dropped for its name.
+    // A name without Latin letters takes its key from a Latin-script name tag, else from a reading of it (Cyrillic,
+    // Chinese), else from the OSM id. No resort is dropped for its name. A reading is shown beside the original name.
     const latin = LATIN_NAME_TAGS.map((tag) => element.tags?.[tag]?.trim() ?? "").find((n) => slugify(n) !== "");
-    const slug = slugify(name) || (latin === undefined ? `osm-${element.id}` : slugify(latin));
+    const reading = slugify(name) === "" && latin === undefined ? romanize(name) : undefined;
+    const slug = slugify(name) || (latin !== undefined ? slugify(latin) : slugify(reading ?? "")) || `osm-${element.id}`;
+    const shownName = reading !== undefined && slugify(reading) !== "" ? `${reading} (${name})` : name;
     const result = toPolygons(element);
     if ("skipped" in result) {
       skipped.push({ osmRef, name, reason: result.skipped });
@@ -166,7 +169,7 @@ export function extractCandidates(elements: readonly OsmElement[], countryCode: 
     const entry: Entry = {
       id: element.id,
       osmRef,
-      name,
+      name: shownName,
       slug,
       polygons: result.polygons,
       area: ResortArea.of(result.polygons).areaSquareKm(),

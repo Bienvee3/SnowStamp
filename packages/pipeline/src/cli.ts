@@ -2,11 +2,12 @@
 // With no country codes it covers every country in the world (Wikidata list). Raw Overpass answers are
 // cached in data/out/raw/ so an interrupted run resumes; --refresh downloads them again.
 // Writes data/out/world.seed.sql, world.resorts.json, world.skipped.json (ignored by git; ODbL data).
+import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { Coordinate, ProviderFailureError } from "@snowstamp/domain";
 import { COUNTRIES_SPARQL, parseCountries, type WikidataBinding } from "./countries.js";
 import { OSM_ATTRIBUTION, buildCountryQuery, type OsmElement } from "./osm.js";
-import { lookupCountryVotes, runOverpass } from "./overpass.js";
+import { buildCountryOfPointsQuery, countVotes, runOverpass } from "./overpass.js";
 import { seedSql } from "./sql.js";
 import { buildWorld } from "./world.js";
 
@@ -55,10 +56,26 @@ async function fetchElements(code: string): Promise<readonly OsmElement[]> {
   return elements;
 }
 
-const world = await buildWorld(codes, {
-  fetchElements,
-  lookupVotes: (points: readonly Coordinate[]) => lookupCountryVotes(points),
-});
+const votesDir = new URL("votes/", outDir);
+await mkdir(votesDir, { recursive: true });
+
+/** Which country each sample point of a border resort lies in; answers are cached by query so reruns are instant. */
+async function lookupVotes(points: readonly Coordinate[]): Promise<Map<string, number>> {
+  const query = buildCountryOfPointsQuery(points);
+  const file = new URL(`${createHash("sha256").update(query).digest("hex").slice(0, 24)}.json`, votesDir);
+  if (!refresh) {
+    try {
+      return countVotes(JSON.parse(await readFile(file, "utf8")) as OsmElement[]);
+    } catch {
+      // not cached yet
+    }
+  }
+  const elements = await runOverpass(query);
+  await writeFile(file, JSON.stringify(elements));
+  return countVotes(elements);
+}
+
+const world = await buildWorld(codes, { fetchElements, lookupVotes });
 
 await writeFile(new URL("world.seed.sql", outDir), seedSql(world.resorts, countries));
 await writeFile(

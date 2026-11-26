@@ -39,6 +39,19 @@ describe("slugify", () => {
   });
 });
 
+describe("romanized names", () => {
+  it("reads Chinese and Cyrillic names into Latin keys and shows the reading beside the original", () => {
+    const { candidates } = extractCandidates(
+      [way(1, "卧虎山滑雪场", box(116, 40, 116.1, 40.1)), way(2, "Спортивный курорт Чекерил", box(43, 43, 43.1, 43.1))],
+      "cn",
+    );
+    expect(candidates.map((c) => [c.key, c.name])).toEqual([
+      ["cn-wo-hu-shan-hua-xue-chang", "Wo Hu Shan Hua Xue Chang (卧虎山滑雪场)"],
+      ["cn-sportivnyy-kurort-chekeril", "Sportivnyy Kurort Chekeril (Спортивный курорт Чекерил)"],
+    ]);
+  });
+});
+
 describe("geometry helpers", () => {
   it("measures the bounding box and the gap between boxes", () => {
     const a = boundingBox([{ outer: [p(0, 0), p(1, 0), p(1, 1), p(0, 0)].map((c) => ({ longitude: c.lon, latitude: c.lat }) as never), holes: [] }]);
@@ -77,10 +90,10 @@ describe("extractCandidates", () => {
 
   it("keys a name in another script by its Latin-script tag, or by the OSM id, and never drops it", () => {
     const hakuba = { ...way(7, "白馬コルチナ", box(137.8, 36.7, 137.9, 36.8)), tags: { name: "白馬コルチナ", "name:en": "Hakuba Cortina" } };
-    const { candidates } = extractCandidates([hakuba, way(8, "卧虎山滑雪场", box(116, 40, 116.1, 40.1)), way(9, "!!!", box(0, 40, 1, 41))], "jp");
+    const { candidates } = extractCandidates([hakuba, way(8, "비발디파크", box(128, 37, 128.1, 37.1)), way(9, "!!!", box(0, 40, 1, 41))], "jp");
     expect(candidates.map((c) => [c.key, c.name])).toEqual([
       ["jp-hakuba-cortina", "白馬コルチナ"],
-      ["jp-osm-8", "卧虎山滑雪场"],
+      ["jp-osm-8", "비발디파크"],
       ["jp-osm-9", "!!!"],
     ]);
   });
