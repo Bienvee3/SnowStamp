@@ -5,3 +5,8 @@ data/out/
 .next/
 next-env.d.ts
 *.tsbuildinfo
+
+# Local configuration and secrets (never committed)
+.env
+.env.*
+!.env.example
